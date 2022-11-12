@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import PBox from './components/PBox/index.vue';
 </script>
 <template>
   <p-box style="height: 100px;background-color: aqua;width: 100px;">
