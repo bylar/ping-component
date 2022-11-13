@@ -1,24 +1,16 @@
 <script setup lang="ts">
 </script>
 <template>
-  <p-box style="height: 100px;background-color: aqua;width: 100px;">
-    <p-box :origin="'center'" :x="'50%'" :y="'50%'" style="height: 100px;background-color: aquamarine;width: 60px;">
+  <p-box :w="1080" :h="720" :cols="[240, 600, 240]" :rows="[500, 220]" style="background: #eee">
+    <p-box :col="3" :row="1" style="background: #666">
     </p-box>
   </p-box>
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-}
-
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+<style>
+body,
+html {
+  padding: 0;
+  margin: 0;
 }
 </style>
