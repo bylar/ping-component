@@ -1,10 +1,9 @@
 <script setup lang="ts">
+import example from './example/index.vue';
 </script>
+
 <template>
-  <p-box :w="1080" :h="720" :cols="[240, 600, 240]" :rows="[500, 220]" style="background: #eee">
-    <p-box :col="3" :row="1" style="background: #666">
-    </p-box>
-  </p-box>
+  <example />
 </template>
 
 <style>
@@ -12,5 +11,9 @@ body,
 html {
   padding: 0;
   margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 </style>

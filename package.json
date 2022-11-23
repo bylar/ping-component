@@ -10,6 +10,7 @@
     "publish": "vite build --target lib ./src/package/index.ts --name pui --dest pui"
   },
   "dependencies": {
+    "echarts": "^5.4.0",
     "vue": "^3.2.41"
   },
   "devDependencies": {

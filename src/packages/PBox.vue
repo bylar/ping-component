@@ -1,7 +1,7 @@
 <template>
-    <div v-if="mounted" ref="node" v-on="attrsMethod" :style="styleMix" :stylea="styleMix" class="node">
+    <div v-if="mounted" ref="node" v-on="attrsMethod" :style="styleMix" class="node">
+        <slot name="title" />
         <slot />
-        {{ styleMix }}
     </div>
 </template>
 
@@ -16,9 +16,9 @@ const mounted = ref(false);
 const fillUnit = (v: number | string) => typeof v === 'number' ? `${v}px` : v;
 type origin = 'center' | 'leftTop' | [number | string, number | string];
 type props = {
-    x?: string | number, y?: string | number, origin?: origin, w?: string | number,
+    x?: string | number, y?: string | number, origin?: origin, w?: string | number, z?: number,
     width?: string | number, h?: string | number, height?: string | number,
-    cols?: Array<number | string>, col?: number, rows?: Array<number | string>, row?: number,
+    cols?: Array<number | string>, col?: number | string, rows?: Array<number | string>, row?: number | string,
 };
 const props = defineProps<props>();
 const children = reactive<ComponentInternalInstance[]>([]);
@@ -27,6 +27,14 @@ const handleChild = (child: ComponentInternalInstance) => {
 };
 const exposed = { handleChild, grid: [(props.cols || []).map(fillUnit), (props.rows || []).map(fillUnit)] };
 let context = ref<ComponentInternalInstance>();
+
+const parent = computed<ComponentInternalInstance | null>((): ComponentInternalInstance | null => {
+    const parentFinder = (context: ComponentInternalInstance): ComponentInternalInstance | null => {
+        return context.parent && (context.parent.vnode.el === context.vnode.el ? parentFinder(context.parent) : context.parent);
+    }
+    return context.value && parentFinder(context.value) || null;
+});
+
 const attrs = useAttrs();
 const attrsValue = computed(() => {
     const result: any = {};
@@ -71,20 +79,24 @@ const calcOrigin = computed<[string, string]>((() => {
     }
 }) as () => [string, string]);
 const calcParentGrid = computed<[string[], string[]]>((() => {
-    const grid = context.value && context.value.parent && context.value.parent.exposed && context.value.parent.exposed.grid;
+    const grid = parent.value && parent.value.exposed && parent.value.exposed.grid;
     return grid;
 }) as () => [string[], string[]]);
 const styleCalcs: { [key: string]: ComputedRef<any> } = {
-    postion: computed(() => {
-        if (!isChild) return 'relative';
+    position: computed(() => {
+        if (!isChild.value) return 'relative';
         return 'absolute';
+    }),
+    zIndex: computed(() => {
+        return props.z;
     }),
     left: computed(() => {
         if (typeof props.x === 'undefined' && typeof props.col === 'undefined') return undefined;
         let value = '';
         if (typeof props.x != 'undefined') value = [value, fillUnit(props.x)].filter(v => v != '').join(' + ');
         if (typeof props.col != 'undefined' && calcParentGrid.value) {
-            value = [value, ...calcParentGrid.value[0].slice(0, props.col - 1)].filter(v => v != '').join(' + ');
+            let colArray: any[] = (typeof props.col === 'string') ? props.col.split('-') : [props.col, props.col];
+            value = [value, ...calcParentGrid.value[0].slice(0, colArray[0] - 1)].filter(v => v != '').join(' + ');
         }
         if (calcOrigin.value[0]) {
             value = [value, calcOrigin.value[0]].filter(v => v != '').join(' - ');
@@ -96,7 +108,8 @@ const styleCalcs: { [key: string]: ComputedRef<any> } = {
         let value = '';
         if (typeof props.y != 'undefined') value = [value, fillUnit(props.y)].filter(v => v != '').join(' + ');
         if (typeof props.row != 'undefined' && calcParentGrid.value) {
-            value = [value, ...calcParentGrid.value[1].slice(0, props.row - 1)].filter(v => v != '').join(' + ');
+            let rowArray: any[] = (typeof props.row === 'string') ? props.row.split('-') : [props.row, props.row];
+            value = [value, ...calcParentGrid.value[1].slice(0, rowArray[0] - 1)].filter(v => v != '').join(' + ');
         }
         if (calcOrigin.value[1]) {
             value = [value, calcOrigin.value[1]].filter(v => v != '').join(' - ');
@@ -107,7 +120,8 @@ const styleCalcs: { [key: string]: ComputedRef<any> } = {
         if (typeof props.w != 'undefined') return fillUnit(props.w);
         if (typeof props.width != 'undefined') return fillUnit(props.width);
         if (typeof props.col != 'undefined' && calcParentGrid.value) {
-            return calcParentGrid.value[0].slice(props.col - 1, props.col)[0]
+            let colArray: number[] = (typeof props.col === 'string') ? props.col.split('-').map(v => Number(v)) : [props.col, props.col];
+            return `calc(${calcParentGrid.value[0].slice(colArray[0] - 1, colArray[1]).join(' + ')})`;
         }
         return undefined;
     }),
@@ -115,7 +129,8 @@ const styleCalcs: { [key: string]: ComputedRef<any> } = {
         if (typeof props.h != 'undefined') return fillUnit(props.h);
         if (typeof props.height != 'undefined') return fillUnit(props.height);
         if (typeof props.row != 'undefined' && calcParentGrid.value) {
-            return calcParentGrid.value[1].slice(props.row - 1, props.row)[0]
+            let rowArray: any[] = (typeof props.row === 'string') ? props.row.split('-').map(v => Number(v)) : [props.row, props.row];
+            return `calc(${calcParentGrid.value[1].slice(rowArray[0] - 1, rowArray[1]).join(' + ')})`;
         }
         return undefined;
     }),
@@ -125,17 +140,17 @@ const calcStyle = computed(() => {
     const result: CSSStyleDeclaration = ({} as CSSStyleDeclaration);
     Object.entries(styleCalcs).map(([key, computeder]) => {
         if (typeof computeder.value != 'undefined') (<any>result)[key] = computeder.value;
-    })
+    });
     return result;
 });
 const isChild = computed(() => {
-    return !!(context.value && context.value.parent && context.value.parent.type.name === 'p-box');
+    return parent.value && parent.value.type.name === 'p-box';
 });
 defineExpose(exposed);
 onMounted(() => {
     context.value = <ComponentInternalInstance>getCurrentInstance();
-    if (isChild.value) {
-        (<typeof exposed>context.value.parent?.exposed).handleChild(context.value);
+    if (isChild.value && parent.value) {
+        (<typeof exposed>parent.value.exposed).handleChild(context.value);
     }
     mounted.value = true;
 });
