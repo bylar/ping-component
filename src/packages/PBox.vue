@@ -19,6 +19,7 @@ type props = {
     x?: string | number, y?: string | number, origin?: origin, w?: string | number, z?: number,
     width?: string | number, h?: string | number, height?: string | number,
     cols?: Array<number | string>, col?: number | string, rows?: Array<number | string>, row?: number | string,
+    shrink?: [number | string, number | string] | [number | string, number | string, number | string, number | string] | number | string
 };
 const props = defineProps<props>();
 const children = reactive<ComponentInternalInstance[]>([]);
@@ -54,6 +55,18 @@ const attrsMethod = computed(() => {
         }
     });
     return result;
+});
+const shrink = computed(() => {
+    let result: (string | number)[] = [0, 0, 0, 0];
+    if (props.shrink && props.shrink) {
+        let arr = props.shrink
+        if (Array.isArray(arr)) {
+            result = arr.length === 2 ? [arr[0], arr[1], arr[0], arr[1]] : arr;
+        } else {
+            result = [arr, arr, arr, arr];
+        }
+    }
+    return result.map(fillUnit);
 });
 const styleMix = computed(() => {
     const result: any = { ...attrsValue.value.style, ...calcStyle.value };
@@ -101,6 +114,7 @@ const styleCalcs: { [key: string]: ComputedRef<any> } = {
         if (calcOrigin.value[0]) {
             value = [value, calcOrigin.value[0]].filter(v => v != '').join(' - ');
         }
+        if (shrink.value) value = [value, shrink.value[1]].filter(v => v != '').join(' + ');
         return `calc(${value})`;
     }),
     top: computed(() => {
@@ -114,6 +128,7 @@ const styleCalcs: { [key: string]: ComputedRef<any> } = {
         if (calcOrigin.value[1]) {
             value = [value, calcOrigin.value[1]].filter(v => v != '').join(' - ');
         }
+        if (shrink.value) value = [value, shrink.value[0]].filter(v => v != '').join(' + ');
         return `calc(${value})`;
     }),
     width: computed(() => {
@@ -121,7 +136,9 @@ const styleCalcs: { [key: string]: ComputedRef<any> } = {
         if (typeof props.width != 'undefined') return fillUnit(props.width);
         if (typeof props.col != 'undefined' && calcParentGrid.value) {
             let colArray: number[] = (typeof props.col === 'string') ? props.col.split('-').map(v => Number(v)) : [props.col, props.col];
-            return `calc(${calcParentGrid.value[0].slice(colArray[0] - 1, colArray[1]).join(' + ')})`;
+            let value = calcParentGrid.value[0].slice(colArray[0] - 1, colArray[1]).join(' + ');
+            if (shrink.value) value = [value, shrink.value[1], shrink.value[3]].filter(v => v != '').join(' - ');
+            return `calc(${value})`;
         }
         return undefined;
     }),
@@ -130,7 +147,9 @@ const styleCalcs: { [key: string]: ComputedRef<any> } = {
         if (typeof props.height != 'undefined') return fillUnit(props.height);
         if (typeof props.row != 'undefined' && calcParentGrid.value) {
             let rowArray: any[] = (typeof props.row === 'string') ? props.row.split('-').map(v => Number(v)) : [props.row, props.row];
-            return `calc(${calcParentGrid.value[1].slice(rowArray[0] - 1, rowArray[1]).join(' + ')})`;
+            let value = calcParentGrid.value[1].slice(rowArray[0] - 1, rowArray[1]).join(' + ');
+            if (shrink.value) value = [value, shrink.value[0], shrink.value[2]].filter(v => v != '').join(' - ');
+            return `calc(${value})`;
         }
         return undefined;
     }),

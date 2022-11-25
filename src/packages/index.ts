@@ -8,7 +8,6 @@ import ECharts from './PCharts.vue';
 componentList.push(ECharts);
 import * as echarts from 'echarts';
 export type DataPoolProvider = (reslove: (options: echarts.EChartsOption) => void) => Promise<{ destroy: null | (() => void) } | null>;
-
 export function DataPoolProviderBuilder<T>(param: {
   created?: (args: T) => Promise<echarts.EChartsOption> | echarts.EChartsOption,
   run?: (args: T) => echarts.EChartsOption,

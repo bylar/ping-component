@@ -1,7 +1,7 @@
 <template>
-  <p-box v-bind="attrsValue" v-on="attrsMethod" ref="boxNode">
+  <p-box class="boxNode" v-on="attrsMethod" ref="boxNode">
     <slot name="title" />
-    <div class="main" ref="chartsNode" />
+    <div class="chartsNode" ref="chartsNode" />
   </p-box>
 </template>
 
@@ -65,11 +65,15 @@ watch(chartsNode, () => chartsNode && launcher())
 </script>
 
 <style scoped>
-.main {
+.boxNode {
+  display: flex;
+  flex-direction: column;
+}
+
+.chartsNode {
   display: block;
   position: relative;
-  width: 100%;
-  height: 100%;
   transition: all 0.3s;
+  flex: 1;
 }
 </style>
