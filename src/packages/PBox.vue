@@ -110,6 +110,7 @@ const styleCalcs: { [key: string]: ComputedRef<any> } = {
         if (typeof props.col != 'undefined' && calcParentGrid.value) {
             let colArray: any[] = (typeof props.col === 'string') ? props.col.split('-') : [props.col, props.col];
             value = [value, ...calcParentGrid.value[0].slice(0, colArray[0] - 1)].filter(v => v != '').join(' + ');
+            console.log(...calcParentGrid.value[0].slice(0, colArray[0] - 1), colArray[0] - 1, colArray, props.col);
         }
         if (calcOrigin.value[0]) {
             value = [value, calcOrigin.value[0]].filter(v => v != '').join(' - ');

@@ -17,6 +17,11 @@
   resolved "https://registry.npmmirror.com/@esbuild/linux-loong64/-/linux-loong64-0.15.14.tgz#1221684955c44385f8af34f7240088b7dc08d19d"
   integrity sha512-eQi9rosGNVQFJyJWV0HCA5WZae/qWIQME7s8/j8DMvnylfBv62Pbu+zJ2eUDqNf2O4u3WB+OEXyfkpBoe194sg==
 
+"@types/bmapgl@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.npmmirror.com/@types/bmapgl/-/bmapgl-0.0.5.tgz#daa92dcd501464b119c4bbfc22f9083f112d6c18"
+  integrity sha512-4LVndgKRKLT4OIgUENDb9Uf9CsT2FtIMvpfKxIQVerEYPEXlunof60qDJQb/+1bg78crv7QJiz71tfh6NfpHbg==
+
 "@vitejs/plugin-vue@^3.2.0":
   version "3.2.0"
   resolved "https://registry.npmmirror.com/@vitejs/plugin-vue/-/plugin-vue-3.2.0.tgz#a1484089dd85d6528f435743f84cdd0d215bbb54"

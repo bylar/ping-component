@@ -1,25 +1,27 @@
 <template>
   <p-box class="main" :w="1080" :h="720" :cols="[240, 600, 240]" :rows="[480, 240]">
 
-    <p-charts :shrink="5" class="item" :data-pool="exampleDataPool3" :col="1" :row="2">
+    <p-map :col="'1-3'" :row="'1-2'" :z="1"> </p-map>
+
+    <p-charts :shrink="5" class="item" :data-pool="exampleDataPool3" :col="1" :row="2" :z="2">
       <template #title>
         <div class="title">饼状图</div>
       </template>
     </p-charts>
 
-    <p-charts :shrink="5" class="item" :data-pool="exampleDataPool1" :col="3" :row="1">
+    <p-charts :shrink="5" class="item" :data-pool="exampleDataPool1" :col="3" :row="1" :z="2">
       <template #title>
         <div class="title">柱状图</div>
       </template>
     </p-charts>
 
-    <p-charts :shrink="5" class="item" :data-pool="exampleDataPool2" :col="2" :row="2">
+    <p-charts :shrink="5" class="item" :data-pool="exampleDataPool2" :col="2" :row="2" :z="2">
       <template #title>
         <div class="title">折线图</div>
       </template>
     </p-charts>
 
-    <p-charts :shrink="5" class="item" :data-pool="exampleDataPool4" :col="3" :row="2">
+    <p-charts :shrink="5" class="item" :data-pool="exampleDataPool4" :col="3" :row="2" :z="2">
       <template #title>
         <div class="title">环状图</div>
       </template>
@@ -34,11 +36,12 @@ import { DataPoolProviderBuilder } from '../packages';
 const exampleDataPool1 = DataPoolProviderBuilder<any>({
   created: (arg) => {
     arg.options = () => ({
+      darkMode: 'auto',
       tooltip: {},
       xAxis: { data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子'] },
       yAxis: {},
       series: [
-        { name: '销量', type: 'bar', data: [1, 1, 1, 1, 1, 1].map(v => Math.floor(30 * Math.random())) }
+        { name: '销量', type: 'bar', data: [1, 1, 1, 1, 1, 1].map(v => Math.floor(30 * Math.random())), color: "rgb(42 180 174)" }
       ]
     });
     return arg.options();
@@ -49,10 +52,11 @@ const exampleDataPool1 = DataPoolProviderBuilder<any>({
 
 const exampleDataPool2 = DataPoolProviderBuilder<{ offset: number, data: any[], generelData: any, options: any }>({
   created: (arg) => {
-    arg.generelData = (offset: number) => ({ name: offset, value: [offset, Math.floor(30 * Math.random())] });
+    arg.generelData = (offset: number) => ({ name: offset, value: [offset, Math.floor(30 * Math.random())], });
     arg.data = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map((v, k) => arg.generelData(k));
     arg.offset = arg.data.length;
     arg.options = (data: any[]) => ({
+      darkMode: 'auto',
       xAxis: {
         type: 'category', splitLine: { show: false },
         min: data.length - 12,
@@ -61,7 +65,7 @@ const exampleDataPool2 = DataPoolProviderBuilder<{ offset: number, data: any[], 
       yAxis: {
         type: 'value', splitLine: { show: false }
       },
-      series: [{ name: "test", type: 'line', showSymbol: false, data, smooth: true }]
+      series: [{ name: "test", type: 'line', showSymbol: false, data, smooth: true, color: "rgb(42 180 174)" }]
     });
     return arg.options(arg.data) as any;
   },
@@ -74,15 +78,14 @@ const exampleDataPool2 = DataPoolProviderBuilder<{ offset: number, data: any[], 
 
 const exampleDataPool3 = DataPoolProviderBuilder<{ offset: number, data: any[], generelData: any, options: any }>({
   created: (arg) => {
-    arg.generelData = (offset: number) => ({ name: offset, value: [offset, Math.floor(30 * Math.random())] });
-    arg.data = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1].map((v, k) => arg.generelData(k));
-    arg.offset = arg.data.length;
     arg.options = (data: any[]) => ({
-      legend: { top: '5%', left: 'center', textStyle: { color: "#fff" } },
+      darkMode: 'auto',
+      legend: { top: '5%', left: 'center', textStyle: { color: "rgb(42, 180, 174)" } },
       series: [
         {
           type: 'pie',
           radius: ['30%', '60%'],
+          color: ['#e3cb20', 'rgb(42, 180, 174)'],
           avoidLabelOverlap: false,
           itemStyle: { borderRadius: 5, },
           label: { show: false, position: 'center' },
@@ -97,11 +100,6 @@ const exampleDataPool3 = DataPoolProviderBuilder<{ offset: number, data: any[], 
     });
     return arg.options(arg.data) as any;
   },
-  run: (arg) => {
-    arg.data.push(arg.generelData(arg.offset++));
-    return arg.options(arg.data) as any;
-  },
-  timeout: 1000
 });
 
 const exampleDataPool4 = DataPoolProviderBuilder<{ offset: number, data: any[], generelData: any, options: any }>({
@@ -142,53 +140,21 @@ const exampleDataPool4 = DataPoolProviderBuilder<{ offset: number, data: any[], 
       }
     ];
     arg.options = (data: any[]) => ({
+      darkMode: 'auto',
       series: [
         {
           type: 'gauge',
           startAngle: 90,
           endAngle: -270,
-          pointer: {
-            show: false
-          },
-          progress: {
-            show: true,
-            overlap: false,
-            roundCap: true,
-            clip: false,
-            itemStyle: {
-            }
-          },
-          axisLine: {
-            show:false,
-            lineStyle: {
-              width: 13
-            }
-          },
-          splitLine: {
-            show: false,
-            distance: 0,
-            length: 10
-          },
-          axisTick: {
-            show: false
-          },
-          axisLabel: {
-            show: false,
-            distance: 50
-          },
+          pointer: { show: false },
+          progress: { show: true, overlap: false, roundCap: true, clip: false, itemStyle: {} },
+          axisLine: { show: false, lineStyle: { width: 13 } },
+          splitLine: { show: false, distance: 0, length: 10 },
+          axisTick: { show: false },
+          axisLabel: { show: false, distance: 50 },
           data: arg.data,
-          title: {
-            fontSize: 12,
-            color: "#fff",
-          },
-          detail: {
-            
-            fontSize: 12,
-            color: 'auto',
-            borderColor: 'auto',
-            borderRadius: 20,
-            formatter: '{value}%'
-          }
+          title: { fontSize: 12, color: "#fff", },
+          detail: { fontSize: 12, color: 'auto', borderColor: 'auto', borderRadius: 20, formatter: '{value}%' }
         }
       ]
     });
@@ -213,6 +179,7 @@ body {
 
 .item {
   background: linear-gradient(45deg, #66ccff1c, transparent, #66ccff1c);
+  background-color: rgb(0 0 0 / 78%);
   border-radius: 5px;
   overflow: hidden;
 }
@@ -221,9 +188,12 @@ body {
   width: 100%;
   display: flex;
   justify-content: center;
-  color: #fff;
+  color: rgb(42, 180, 174);
+  font-weight: 900;
   height: 32px;
+  font-size: 1.2em;
   align-items: center;
   background: linear-gradient(45deg, #66ccff1c, transparent, #66ccff1c);
+  background-color: #2ab4ae21;
 }
 </style>
